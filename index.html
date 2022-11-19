@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>UTS LAB PC1</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<div class="container">
+		<h1 class="title">UTS LAB PC1</h1>
+		<div class="wrapper">
+			<div class="preview-img">
+				<canvas id='canvas1'></canvas>
+				<canvas id='canvas2'></canvas>
+            </div>
+			<div class="editor-panel">
+				<button id='read' class="firstbtn">READ IMAGE</button>
+				<button id='ori' class="firstbtn">ORIGINAL IMAGE</button>
+				<button id="no1b" class="secondbtn">nomor 1b</button>
+				<button id="no1c" class="secondbtn">nomor 1c</button>
+				<div class="line">
+					<hr>
+				</div>
+				<p>Nama : Puan Abidah Nitisara</p>
+				<p>Nim	: 201401009</p>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+<script src='pc.js'></script>
+<script>
+	var canvas = document.getElementById('canvas1')
+	var obj = new pc(canvas)
+	obj.image2canvas("logo_usu.png")
+	var canvas2 = document.getElementById('canvas2')
+	var obj2 = new pc(canvas2)
+	obj2.blank2canvas(200, 200)
+	var tes = new Array()
+
+	document.getElementById('read').addEventListener('click', function () {
+		tes = obj.image2read()
+	})
+
+	document.getElementById('ori').addEventListener('click', function () {
+		obj.image2original()
+	})
+
+	//Nomor 1B  
+	document.getElementById('no1b').addEventListener('click', function () {
+		//copy array to array without reference
+		tesbackup = new Array();
+		for (var c = 0; c < tes.length; c++) {
+			temp = new Array();
+			for (var d = 0; d < 4; d++) {
+				temp.push(tes[c][d]);
+			}
+			tesbackup.push(temp);
+		}
+		x = obj.i2x(i); // mengambil nilai index ke dalam koordinat x
+		y = obj.i2y(i);
+
+		var wnow = obj.width;
+		for (var i = 0; i < tesbackup.length; i++) {
+			x = obj.i2x(i);
+			y = obj.i2y(i);
+			if (x < wnow / 4) {
+				tes[i][0] = tesbackup[i][0] + 255;
+			}
+
+			if (x > wnow / 4 && x < (wnow * 2) / 4) {
+				tes[i][1] = tesbackup[i][1] + 255;
+			}
+			if (x > (wnow * 2) / 4) {
+				filtersize = 5;
+				borderparam = (filtersize - 1) / 2;
+				meandoubleparam = filtersize * filtersize;
+
+				xstart = obj.i2x(i) - borderparam;
+				xend = obj.i2x(i) + borderparam;
+				ystart = obj.i2y(i) - borderparam;
+				yend = obj.i2y(i) + borderparam;
+				red = 255;
+				green = 255;
+				blue = 255;
+				for (var yc = ystart; yc <= yend; yc++) {
+					for (var xc = xstart; xc <= xend; xc++) {
+						if (yc >= 0 && xc >= 0 && xc < obj.width && yc < obj.height) {
+							red += tesbackup[obj.xy2i(xc, yc)][0];
+							green += tesbackup[obj.xy2i(xc, yc)][1];
+							blue += tesbackup[obj.xy2i(xc, yc)][2];
+							meandoubleparam++;
+						}
+					}
+				}
+				tes[i][0] = Math.floor(red / meandoubleparam);
+				tes[i][1] = Math.floor(green / meandoubleparam);
+				tes[i][2] = Math.floor(blue / meandoubleparam);
+			}
+		}
+		obj.array2canvas(tes);
+	});
+
+	document.getElementById('no1c').addEventListener('click', function () {
+		//copy array to array without reference
+		tesbackup = new Array();
+		for (var c = 0; c < tes.length; c++) {
+			temp = new Array();
+			for (var d = 0; d < 4; d++) {
+				temp.push(tes[c][d]);
+			}
+			tesbackup.push(temp);
+		}
+		x = obj.i2x(i);
+		y = obj.i2y(i);
+
+		var wnow = obj.width;
+		var ynow = obj.height;
+		for (var i = 0; i < tesbackup.length; i++) {
+			x = obj.i2x(i);
+			y = obj.i2y(i);
+			if (x < wnow / 2 && y < ynow / 2) {
+				tes[i][0] = tesbackup[i][0] + 255;
+			}
+
+			if (x < wnow / 2 && y > ynow / 2) {
+				tes[i][0] = tesbackup[i][0] + 255;
+				tes[i][1] = tesbackup[i][1] + 255;
+			}
+
+			if (x > wnow / 2 && y < ynow / 2) {
+				tes[i][1] = tesbackup[i][1] + 255;
+			}
+
+			if (x > wnow / 2 && y > ynow / 2) {
+				tes[i][2] = tesbackup[i][2] + 255;
+			}
+		}
+		obj.array2canvas(tes);
+	})
+
+
+</script>
+</html>
